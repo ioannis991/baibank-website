@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bai Bank - Secure Login</title>
+  <style>
+    /* Root and typography */
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+      --color-text: #6b7280;
+      --color-bg: #ffffff;
+      --color-accent: #111827;
+      --color-primary: #111827;
+      --color-input-bg: #f9fafb;
+      --color-input-border: #d1d5db;
+      --color-card-bg: #fefefe;
+      --color-shadow: rgba(0,0,0,0.06);
+      --color-error: #dc2626;
+      --color-logout: #b91c1c;
+      --border-radius: 0.75rem;
+      --transition-fast: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --max-width: 1200px;
+      --input-width: 280px;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-size: 18px;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.75rem;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Simple bank building icon - monochrome line SVG */
+    .logo svg {
+      height: 32px;
+      width: 32px;
+      stroke: var(--color-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    nav a {
+      color: var(--color-text);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 4px;
+      user-select: none;
+      transition: color var(--transition-fast);
+    }
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 0;
+      background: var(--color-primary);
+      transition: width var(--transition-fast);
+      border-radius: 2px;
+    }
+    nav a:hover,
+    nav a:focus {
+      color: var(--color-primary);
+    }
+    nav a:hover::after,
+    nav a:focus::after {
+      width: 100%;
+    }
+
+    /* Main container with vertical padding */
+    main.container {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    /* Hero section */
+    .hero {
+      max-width: 700px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .hero h1 {
+      font-weight: 800;
+      font-size: 4.5rem;
+      color: var(--color-primary);
+      line-height: 1.1;
+      margin: 0 0 1rem 0;
+      user-select: text;
+    }
+
+    .hero p {
+      font-weight: 500;
+      font-size: 1.25rem;
+      color: var(--color-text);
+      margin: 0 auto;
+      max-width: 450px;
+      user-select: text;
+    }
+
+    /* Card styles */
+    .card {
+      background: var(--color-card-bg);
+      box-shadow: 0 12px 24px var(--color-shadow);
+      border-radius: var(--border-radius);
+      padding: 3rem 3rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 100%;
+      max-width: 430px;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Form styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      text-align: left;
+      user-select: auto;
+    }
+
+    label {
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: block;
+      color: #374151;
+      font-size: 1.125rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: var(--input-width);
+      max-width: 100%;
+      background: var(--color-input-bg);
+      border: 2px solid var(--color-input-border);
+      border-radius: 0.75rem;
+      padding: 1.1rem 1.25rem;
+      font-size: 1.125rem;
+      color: #111827;
+      font-weight: 500;
+      outline-offset: 3px;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      font-family: inherit;
+      user-select: text;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.4);
+      outline: none;
+    }
+
+    /* Button */
+    button {
+      background-color: var(--color-primary);
+      color: white;
+      font-weight: 700;
+      padding: 1.15rem 1.75rem;
+      font-size: 1.25rem;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color var(--transition-fast), transform var(--transition-fast);
+      user-select: none;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(17,24,39,0.15);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: flex-start;
+      min-width: var(--input-width);
+      max-width: 100%;
+    }
+
+    button:hover,
+    button:focus {
+      background-color: #1e293b;
+      transform: scale(1.07);
+      outline: none;
+      box-shadow: 0 6px 16px rgba(17,24,39,0.3);
+    }
+
+    /* Account info styles */
+    .account {
+      display: none;
+      flex-direction: column;
+      gap: 2.25rem;
+      width: 100%;
+      max-width: 550px;
+      padding: 3rem 3rem 4rem;
+      background: var(--color-card-bg);
+      box-shadow: 0 14px 32px var(--color-shadow);
+      border-radius: var(--border-radius);
+      position: relative;
+      user-select: none;
+    }
+
+    .account.active {
+      display: flex;
+    }
+
+    .account h1 {
+      font-weight: 800;
+      font-size: 3.25rem;
+      color: var(--color-primary);
+      margin: 0;
+      user-select: text;
+    }
+
+    .balance {
+      font-weight: 800;
+      font-size: 3.75rem;
+      color: var(--color-primary);
+      margin: 0;
+      user-select: text;
+    }
+
+    /* Transactions grouped by date */
+    .transactions-group {
+      user-select: text;
+    }
+    .transactions-date {
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin: 1.25rem 0 0.75rem;
+      color: var(--color-primary);
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.35rem;
+    }
+    .transactions-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-radius: var(--border-radius);
+      box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.05);
+      background: #fcfcfc;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+      font-weight: 600;
+      font-size: 1.125rem;
+      color: #374151;
+      transition: background-color 0.3s;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+
+    .transaction-item:hover,
+    .transaction-item:focus-within {
+      background-color: #f9fafb;
+      outline: none;
+    }
+
+    .transaction-description {
+      text-align: left;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .transaction-amount {
+      text-align: right;
+      font-weight: 700;
+      color: var(--color-primary);
+      min-width: 90px;
+      user-select: text;
+    }
+
+    /* Error message */
+    .error-message {
+      color: var(--color-error);
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-align: center;
+      user-select: none;
+      margin-top: -0.5rem;
+    }
+
+    /* Logout button */
+    .logout-button {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background-color: var(--color-logout);
+      border-radius: var(--border-radius);
+      padding: 0.65rem 1.25rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color var(--transition-fast), transform var(--transition-fast);
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(185,28,28,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .logout-button:hover,
+    .logout-button:focus {
+      background-color: #7f1d1d;
+      transform: scale(1.1);
+      outline: none;
+      box-shadow: 0 6px 16px rgba(127,29,29,0.6);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      :root {
+        --input-width: 100%;
+      }
+      .hero h1 {
+        font-size: 3rem;
+      }
+      .account {
+        padding: 2rem 2rem 3rem;
+        max-width: 100%;
+      }
+      main.container {
+        padding: 3rem 1.25rem 4rem;
+      }
+      button, input[type="text"], input[type="password"] {
+        width: 100% !important;
+        min-width: auto !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header role="banner" aria-label="Bai Bank header">
+    <div class="logo">
+      <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 10l9-7 9 7v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-9z"></path><path d="M9 21v-6h6v6"></path></svg>
+      Bai Bank
+    </div>
+    <nav role="navigation" aria-label="Primary Navigation">
+      <a href="#" tabindex="0">Home</a>
+      <a href="#" tabindex="0">Services</a>
+    </nav>
+  </header>
+  <main class="container" role="main" aria-labelledby="page-title">
+    <section class="hero">
+      <h1 id="page-title">Welcome to Bai Bank</h1>
+      <p>Your secure gateway to seamless banking. Please log in to access your account.</p>
+    </section>
+
+    <section class="card login-card" aria-live="polite" aria-label="Bank account login form">
+      <form id="login-form" aria-describedby="login-error" novalidate>
+        <div>
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocapitalize="none" autocomplete="username" required aria-required="true" />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required aria-required="true" />
+        </div>
+        <button type="submit" aria-label="Log in to your bank account">Log In</button>
+      </form>
+      <p id="login-error" class="error-message" role="alert" aria-live="assertive" aria-atomic="true" hidden>Invalid username or password.</p>
+    </section>
+
+    <section class="account" aria-live="polite" aria-label="Your account balance and recent transactions" tabindex="0" role="region" aria-hidden="true">
+      <h1 tabindex="-1">Account Summary</h1>
+      <button class="logout-button" id="logout-button" aria-label="Log out from your bank account" title="Log out" hidden>Log Out</button>
+      <p class="balance" aria-label="Account balance">Balance: </p>
+      <div id="transactions-container"></div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      // Transactions with random dates above 31 Dec 2024
+      function randomDate() {
+        // Between Jan 1 2025 and Dec 31 2026
+        const start = new Date("2025-01-01").getTime();
+        const end = new Date("2026-12-31").getTime();
+        const date = new Date(start + Math.random() * (end - start));
+        return date;
+      }
+      function formatDate(d) {
+        return d.toLocaleDateString(undefined, {year: 'numeric', month: 'long', day: 'numeric'});
+      }
+
+      // Group transactions by date string
+      function groupByDate(transactions) {
+        const groups = {};
+        transactions.forEach(({desc, amount, date}) => {
+          const dateStr = formatDate(date);
+          if (!groups[dateStr]) groups[dateStr] = [];
+          groups[dateStr].push({desc, amount});
+        });
+        return groups;
+      }
+
+      // Sort dates descending
+      function sortDatesDesc(dates) {
+        return dates.sort((a,b) => new Date(b) - new Date(a));
+      }
+
+      const users = {
+        ioannis: {
+          password: "ioannis",
+          balance: "∞€",
+          transactions: [
+            {desc: "Kotsovolos", amount: "14,50€", date: randomDate()},
+            {desc: "ATM Withdrawal", amount: "100€", date: randomDate()},
+            {desc: "Salary Deposit", amount: "2500€", date: randomDate()},
+            {desc: "Electricity Bill", amount: "75€", date: randomDate()},
+          ]
+        },
+        gerasimos: {
+          password: "gerasimos",
+          balance: "∞€",
+          transactions: [
+            {desc: "NFC Payment to Contact", amount: "50€", date: randomDate()},
+            {desc: "Kotsovolos", amount: "1799.99€", date: randomDate()},
+            {desc: "Online Transfer", amount: "200€", date: randomDate()},
+            {desc: "Grocery Store", amount: "123.50€", date: randomDate()},
+          ]
+        },
+        manos: {
+          password: "manos",
+          balance: "∞€",
+          transactions: [
+            {desc: "Coffee Shop", amount: "4.50€", date: randomDate()},
+            {desc: "Internet Bill", amount: "39.99€", date: randomDate()},
+            {desc: "Bookstore", amount: "21.75€", date: randomDate()},
+            {desc: "Salary Deposit", amount: "3000€", date: randomDate()},
+          ]
+        },
+        rafail: {
+          password: "rafail",
+          balance: "∞€",
+          transactions: [
+            {desc: "Movie Theater", amount: "12.00€", date: randomDate()},
+            {desc: "Gas Station", amount: "45.60€", date: randomDate()},
+            {desc: "Kotsovolos", amount: "300€", date: randomDate()},
+            {desc: "Salary Deposit", amount: "2800€", date: randomDate()},
+          ]
+        },
+      };
+
+      const loginForm = document.getElementById('login-form');
+      const loginCard = document.querySelector('.login-card');
+      const accountCard = document.querySelector('.account');
+      const errorMessage = document.getElementById('login-error');
+      const balanceEl = accountCard.querySelector('.balance');
+      const transactionsContainer = document.getElementById('transactions-container');
+      const accountTitle = accountCard.querySelector('h1');
+      const logoutButton = document.getElementById('logout-button');
+
+      function renderTransactionsGrouped(transactions) {
+        // Group by date (string)
+        const groups = groupByDate(transactions);
+        const dateStrings = Object.keys(groups);
+        // Sort dates descending
+        dateStrings.sort((a, b) => new Date(b) - new Date(a));
+
+        transactionsContainer.innerHTML = '';
+
+        dateStrings.forEach(dateStr => {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'transactions-group';
+
+          const dateHeading = document.createElement('h2');
+          dateHeading.className = 'transactions-date';
+          dateHeading.textContent = dateStr;
+          groupDiv.appendChild(dateHeading);
+
+          const ul = document.createElement('ul');
+          ul.className = 'transactions-list';
+          ul.setAttribute('role', 'list');
+          ul.setAttribute('aria-label', `Transactions for ${dateStr}`);
+
+          groups[dateStr].forEach(({desc, amount}) => {
+            const li = document.createElement('li');
+            li.className = 'transaction-item';
+            li.tabIndex = 0;
+            li.innerHTML = `
+              <span class="transaction-description">${desc}</span>
+              <span class="transaction-amount">${amount}</span>
+            `;
+            ul.appendChild(li);
+          });
+
+          groupDiv.appendChild(ul);
+          transactionsContainer.appendChild(groupDiv);
+        });
+      }
+
+      function showAccount(username) {
+        const user = users[username];
+        balanceEl.textContent = `Balance: ${user.balance}`;
+        renderTransactionsGrouped(user.transactions);
+        loginCard.style.display = 'none';
+        accountCard.classList.add('active');
+        accountCard.setAttribute('aria-hidden', 'false');
+        logoutButton.hidden = false;
+        accountTitle.focus();
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+          accountCard.classList.remove('active');
+          accountCard.setAttribute('aria-hidden', 'true');
+          loginCard.style.display = 'flex';
+          logoutButton.hidden = true;
+          errorMessage.hidden = true;
+          loginForm.reset();
+          loginForm.username.focus();
+          transactionsContainer.innerHTML = '';
+        }
+      }
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        errorMessage.hidden = true;
+
+        const username = loginForm.username.value.trim().toLowerCase();
+        const password = loginForm.password.value;
+
+        if (users[username] && users[username].password === password) {
+          showAccount(username);
+        } else {
+          errorMessage.hidden = false;
+          errorMessage.textContent = 'Invalid username or password.';
+          loginForm.username.focus();
+        }
+      });
+
+      logoutButton.addEventListener('click', logout);
+    })();
+  </script>
+</body>
+</html>
+
