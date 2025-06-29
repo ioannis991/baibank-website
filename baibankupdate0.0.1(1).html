@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bai Bank | Secure Online Banking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        .infinity-icon {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg flex items-center justify-center p-4">
+    <!-- Login Form (shown by default) -->
+    <div id="login-form" class="bg-white rounded-xl p-8 w-full max-w-md card-shadow fade-in">
+        <div class="flex justify-center mb-6">
+            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c4531d13-ab01-46be-850d-127159098a46.png" alt="Bai Bank logo with blue and gold color scheme, modern typography" class="h-12" />
+        </div>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Welcome to Bai Bank</h2>
+        
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="username" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+            <button type="submit" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105">
+                Sign In
+            </button>
+        </form>
+        
+        <div id="error-message" class="mt-4 text-red-500 text-sm hidden"></div>
+        
+        <div class="mt-8 text-center text-sm text-gray-600">
+            <p>Forgot your password? <a href="#" class="text-blue-600 hover:text-blue-800">Reset it here</a></p>
+            <p class="mt-2">New customer? <a href="#" class="text-blue-600 hover:text-blue-800">Open an account</a></p>
+        </div>
+    </div>
+
+    <!-- Dashboard (hidden initially) -->
+    <div id="dashboard" class="bg-white rounded-xl p-6 w-full max-w-4xl card-shadow hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center">
+                <img src="https://placehold.co/150x50" alt="Bai Bank logo in smaller size" class="h-8 mr-2" />
+                <span class="text-xl font-bold text-gray-800">Welcome, <span id="welcome-name"></span></span>
+            </div>
+            <button id="logout-btn" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Balance Card -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-700 rounded-xl p-6 text-white">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm opacity-80">Available Balance</p>
+                        <div class="flex items-center mt-2">
+                            <span class="text-3xl font-bold">Unlimited</span>
+                            <span class="infinity-icon ml-2">∞</span>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                        <i class="fas fa-wallet text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 class="font-bold text-gray-700 mb-4">Quick Actions</h3>
+                <div id="quick-actions" class="grid grid-cols-1 gap-4">
+                    <button id="transfer-btn" class="flex flex-col items-center justify-center p-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                        <i class="fas fa-exchange-alt text-blue-600 mb-2"></i>
+                        <span class="text-xs text-gray-700">Transfer</span>
+                    </button>
+                </div>
+                <div id="transfer-form" class="hidden mt-4 space-y-4">
+                    <div>
+                        <label for="recipient" class="block text-sm font-medium text-gray-700">Recipient Username</label>
+                        <input type="text" id="recipient" placeholder="e.g. baibankdebt" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <input type="number" id="amount" placeholder="€0.00" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <button id="send-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg">Send</button>
+                </div>
+            </div>
+            
+            <!-- Account Summary -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 class="font-bold text-gray-700 mb-4">Account Summary</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Account Number</span>
+                        <span class="text-sm font-mono">•••• 7890</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">IBAN</span>
+                        <span class="text-sm font-mono">GR•• EXMP 0000 7890</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Status</span>
+                        <span class="text-sm text-green-600 font-medium">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transactions -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-gray-700">Recent Transactions</h3>
+                <button class="text-blue-600 hover:text-blue-800 text-sm">View All</button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Sample Transaction 1 -->
+                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-shopping-cart text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Amazon Marketplace</p>
+                            <p class="text-xs text-gray-500">Today, 14:30</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-red-500">-€29.99</p>
+                        <p class="text-xs text-gray-500">Completed</p>
+                    </div>
+                </div>
+                
+                <!-- Sample Transaction 2 -->
+                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-money-bill-wave text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Salary Deposit</p>
+                            <p class="text-xs text-gray-500">Mar 1, 08:00</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-green-500">+€3,450.00</p>
+                        <p class="text-xs text-gray-500">Completed</p>
+                    </div>
+                </div>
+                
+                <!-- Sample Transaction 3 -->
+                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-utensils text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Taverna Mediterraneo</p>
+                            <p class="text-xs text-gray-500">Feb 28, 20:15</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-red-500">-€68.50</p>
+                        <p class="text-xs text-gray-500">Completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Valid users
+        const validUsers = {
+            'ioannis': 'ioannis',
+            'anna': 'anna',
+            'gerasimos': 'gerasimos',
+            'manosp': 'manosp',
+            'rafail': 'rafail',
+            'dimis': 'dimikokos2014'
+        };
+
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
+        const loginFormContainer = document.getElementById('login-form');
+        const dashboard = document.getElementById('dashboard');
+        const welcomeName = document.getElementById('welcome-name');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Handle login
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (validUsers[username] && validUsers[username] === password) {
+                // Successful login
+                errorMessage.classList.add('hidden');
+                
+                // Show welcome message
+                welcomeName.textContent = username.charAt(0).toUpperCase() + username.slice(1);
+                
+                // Transition to dashboard
+                loginFormContainer.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                dashboard.classList.add('fade-in');
+                
+                // Reset form
+                loginForm.reset();
+            } else {
+                // Failed login
+                errorMessage.textContent = 'Invalid username or password';
+                errorMessage.classList.remove('hidden');
+            }
+        });
+
+        // Transfer button functionality
+        const transferBtn = document.getElementById('transfer-btn');
+        const transferForm = document.getElementById('transfer-form');
+        const sendBtn = document.getElementById('send-btn');
+        const recipientInput = document.getElementById('recipient');
+        const amountInput = document.getElementById('amount');
+        
+        transferBtn.addEventListener('click', function() {
+            transferForm.classList.toggle('hidden');
+        });
+
+        sendBtn.addEventListener('click', function() {
+            const recipient = recipientInput.value.trim();
+            const amount = amountInput.value.trim();
+            
+            if (recipient === 'baibankdebt' && amount > 0) {
+                alert(`Successfully sent €${amount} to ${recipient}`);
+                transferForm.classList.add('hidden');
+                recipientInput.value = '';
+                amountInput.value = '';
+            } else {
+                alert('Please enter a valid recipient (baibankdebt) and amount');
+            }
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', function() {
+            dashboard.classList.add('hidden');
+            loginFormContainer.classList.remove('hidden');
+            loginFormContainer.classList.add('fade-in');
+        });
+
+        // Enhance security by preventing going back to dashboard after logout
+        window.addEventListener('popstate', function() {
+            dashboard.classList.add('hidden');
+            loginFormContainer.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
+
